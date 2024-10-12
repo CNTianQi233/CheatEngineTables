@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="45">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>1</ID>
+      <Description>"启用Mono"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+{$lua}
+if syntaxcheck then return end
+if process and readInteger(process) ~= 0 then
+    mono_initialize()
+    LaunchMonoDataCollector()
+else
+    local msg = 'No process detected.'
+    print(msg)
+    error(msg)
+end
+{$asm}
+[DISABLE]
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>29</ID>
+      <Description>"获取任务时间"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+//code from here to '[DISABLE]' will be used to enable the cheat
+alloc(newmem,2048,SecretHistories.UI.AureateWindow:DisplayButtonState+21) 
+label(returnhere)
+label(originalcode)
+label(exit)
+
+alloc(Task_time,8)
+registersymbol(Task_time)
+
+Task_time:
+  dd
+
+newmem: //this is allocated memory, you have read,write,execute access
+//place your code here
+
+originalcode:
+  mov rax,[rsi+00000088]
+  mov [Task_time],rax
+
+exit:
+jmp returnhere
+
+SecretHistories.UI.AureateWindow:DisplayButtonState+21:
+jmp newmem
+nop 2
+returnhere:
+
+
+ 
+ 
+[DISABLE]
+//code from here till the end of the code will be used to disable the cheat
+dealloc(*)
+unregistersymbol(*)
+SecretHistories.UI.AureateWindow:DisplayButtonState+21:
+db 48 8B 86 88 00 00 00
+//mov rax,[rsi+00000088]
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>9</ID>
+          <Description>"Task time"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>Task_time</Address>
+          <Offsets>
+            <Offset>10</Offset>
+          </Offsets>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>87</Key>
+              </Keys>
+              <Value>0</Value>
+              <ID>0</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>62</ID>
+      <Description>"解锁房间时间"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+//code from here to '[DISABLE]' will be used to enable the cheat
+alloc(newmem,2048,SecretHistories.UI.RoomWorkWindow:DisplayButtonState+24)
+label(returnhere)
+label(originalcode)
+label(exit)
+
+alloc(Unlock_time,8)
+registersymbol(Unlock_time)
+
+Unlock_time:
+  dd
+
+newmem: //this is allocated memory, you have read,write,execute access
+//place your code here
+
+originalcode:
+mov rcx,rax
+mov [Unlock_time],rcx
+cmp dword ptr [rcx],00
+
+exit:
+jmp returnhere
+
+SecretHistories.UI.RoomWorkWindow:DisplayButtonState+24:
+jmp newmem
+nop
+returnhere:
+
+
+
+
+[DISABLE]
+//code from here till the end of the code will be used to disable the cheat
+dealloc(*)
+unregistersymbol(*)
+SecretHistories.UI.RoomWorkWindow:DisplayButtonState+24:
+db 48 8B C8 83 39 00
+//mov rcx,rax
+//cmp dword ptr [rcx],00
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>63</ID>
+          <Description>"Unlock_time"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>Unlock_time</Address>
+          <Offsets>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>49</ID>
+      <Description>"卡牌张数（大于2）"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+//code from here to '[DISABLE]' will be used to enable the cheat
+alloc(newmem,2048)
+label(returnhere)
+label(originalcode)
+label(exit)
+
+alloc(Card_n,4)
+registersymbol(Card_n)
+
+newmem: //this is allocated memory, you have read,write,execute access
+mov [Card_n],rcx
+
+originalcode:
+mov rdi,rcx
+mov rsi,rdx
+mov [rdi+0000008C],esi
+test esi,esi
+
+exit:
+jmp returnhere
+
+SecretHistories.UI.ElementStack:SetQuantity+10:
+jmp far newmem
+returnhere:
+
+
+
+
+[DISABLE]
+//code from here till the end of the code will be used to disable the cheat
+dealloc(*)
+unregistersymbol(*)
+SecretHistories.UI.ElementStack:SetQuantity+10:
+db 48 8B F9 48 8B F2 89 B7 8C 00 00 00 85 F6
+//mov rdi,rcx
+//mov rsi,rdx
+//mov [rdi+0000008C],esi
+//test esi,esi
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>64</ID>
+          <Description>"Card Num"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>Card_n</Address>
+          <Offsets>
+            <Offset>8C</Offset>
+          </Offsets>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>72</ID>
+      <Description>"卡牌张数"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+//code from here to '[DISABLE]' will be used to enable the cheat
+alloc(newmem,2048,SecretHistories.UI.ElementStack:get_Quantity+8) 
+label(returnhere)
+label(originalcode)
+label(exit)
+
+alloc(Card_num,4)
+registersymbol(Card_num)
+
+Card_num:
+  dd
+
+newmem: //this is allocated memory, you have read,write,execute access
+  mov [Card_num],rcx
+  jmp returnhere
+
+originalcode:
+  mov rsi,rcx
+  movzx eax,byte ptr [rsi+00000088]
+  cmp rdi,2
+  je newmem
+exit:
+  jmp returnhere
+
+SecretHistories.UI.ElementStack:get_Quantity+8:
+  jmp originalcode
+  nop 5
+
+returnhere:
+
+
+[DISABLE]
+//code from here till the end of the code will be used to disable the cheat
+dealloc(*)
+unregistersymbol(*)
+SecretHistories.UI.ElementStack:get_Quantity+8:
+db 48 8B F1 0F B6 86 88 00 00 00
+//mov rsi,rcx
+//movzx eax,byte ptr [rsi+00000088]
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>39</ID>
+          <Description>"Card Num"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>Card_num</Address>
+          <Offsets>
+            <Offset>8C</Offset>
+          </Offsets>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols>
+    <SymbolEntry>
+      <Name>TimeAddress</Name>
+      <Address>19C50460000</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>TaskTime</Name>
+      <Address>1DEC2FB0000</Address>
+    </SymbolEntry>
+  </UserdefinedSymbols>
+</CheatTable>
