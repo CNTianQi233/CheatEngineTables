@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="45">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>31</ID>
+      <Description>"启用Mono Script"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+{$lua}
+if syntaxcheck then return end
+if process and readInteger(process) ~= 0 then
+    mono_initialize()
+    LaunchMonoDataCollector()
+else
+    local msg = 'No process detected.'
+    print(msg)
+    error(msg)
+end
+{$asm}
+[DISABLE]
+
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>2</ID>
+      <Description>"获取角色地址（精力、铜钱）"</Description>
+      <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+//code from here to '[DISABLE]' will be used to enable the cheat
+alloc(newmem,2048,StatusAttributeShow:LoadStatus+66)
+label(returnhere)
+label(originalcode)
+label(exit)
+
+registersymbol(CharacterBase)
+alloc(CharacterBase,8)
+
+CharacterBase:
+  dd
+
+newmem:
+  mov [CharacterBase],rax
+
+originalcode:
+movsxd  rax,dword ptr [rax+00000080]
+
+exit:
+jmp returnhere
+
+StatusAttributeShow:LoadStatus+66:
+jmp newmem
+nop 2
+returnhere:
+
+
+
+
+[DISABLE]
+//code from here till the end of the code will be used to disable the cheat
+dealloc(*)
+unregistersymbol(*)
+StatusAttributeShow:LoadStatus+66:
+db 48 63 80 80 00 00 00
+//movsxd  rax,dword ptr [rax+00000080]
+
+{
+// ORIGINAL CODE - INJECTION POINT: StatusAttributeShow:LoadStatus+66
+
+StatusAttributeShow:LoadStatus+36: 48 89 45 B8                    - mov [rbp-48],rax
+StatusAttributeShow:LoadStatus+3a: 48 63 40 78                    - movsxd  rax,dword ptr [rax+78]
+StatusAttributeShow:LoadStatus+3e: 48 89 44 24 20                 - mov [rsp+20],rax
+StatusAttributeShow:LoadStatus+43: 48 8B CF                       - mov rcx,rdi
+StatusAttributeShow:LoadStatus+46: 49 BB 10 81 39 A8 DB 01 00 00  - mov r11,StatusAttributeShow:SetStatus
+StatusAttributeShow:LoadStatus+50: 41 FF D3                       - call r11
+StatusAttributeShow:LoadStatus+53: 48 8B 45 B8                    - mov rax,[rbp-48]
+StatusAttributeShow:LoadStatus+57: 48 8B 57 28                    - mov rdx,[rdi+28]
+StatusAttributeShow:LoadStatus+5b: 4C 8B 47 30                    - mov r8,[rdi+30]
+StatusAttributeShow:LoadStatus+5f: 4C 63 88 84 00 00 00           - movsxd  r9,dword ptr [rax+00000084]
+// ---------- INJECTING HERE ----------
+StatusAttributeShow:LoadStatus+66: 48 63 80 80 00 00 00           - movsxd  rax,dword ptr [rax+00000080]
+// ---------- DONE INJECTING  ----------
+StatusAttributeShow:LoadStatus+6d: 48 89 44 24 20                 - mov [rsp+20],rax
+StatusAttributeShow:LoadStatus+72: 48 8B CF                       - mov rcx,rdi
+StatusAttributeShow:LoadStatus+75: 90                             - nop
+StatusAttributeShow:LoadStatus+76: 49 BB 10 81 39 A8 DB 01 00 00  - mov r11,StatusAttributeShow:SetStatus
+StatusAttributeShow:LoadStatus+80: 41 FF D3                       - call r11
+StatusAttributeShow:LoadStatus+83: 48 8B 47 38                    - mov rax,[rdi+38]
+StatusAttributeShow:LoadStatus+87: 48 89 45 D0                    - mov [rbp-30],rax
+StatusAttributeShow:LoadStatus+8b: 48 8B 47 40                    - mov rax,[rdi+40]
+StatusAttributeShow:LoadStatus+8f: 48 89 45 C8                    - mov [rbp-38],rax
+StatusAttributeShow:LoadStatus+93: 48 8B CE                       - mov rcx,rsi
+}
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>3</ID>
+          <Description>"精力上限"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>CharacterBase</Address>
+          <Offsets>
+            <Offset>80</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>5</ID>
+          <Description>"当前精力"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>CharacterBase</Address>
+          <Offsets>
+            <Offset>84</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>4</ID>
+          <Description>"铜钱"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>CharacterBase</Address>
+          <Offsets>
+            <Offset>8C</Offset>
+          </Offsets>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>8</ID>
+      <Description>"获取角色地址（人物属性）"</Description>
+      <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+alloc(AttrEdit,2048,AttributeCalculator:GetAtk+23)
+label(returnAttr)
+label(originalcodeAttr)
+label(exitAttr)
+registersymbol(AttrBase)
+alloc(AttrBase,8)
+
+AttrBase:
+  dd
+
+AttrEdit:
+  mov [AttrBase],rsi
+originalcodeAttr:
+  mov rcx,rsi
+  mov r11,AttributeCalculator:GetAtkNum
+exitAttr:
+  jmp returnAttr
+
+AttributeCalculator:GetAtk+23:
+  jmp AttrEdit
+  nop 8
+returnAttr:
+
+[DISABLE]
+dealloc(*)
+unregistersymbol(*)
+AttributeCalculator:GetAtk+23:
+db 48 8B CE 49 BB F0 65 E1 25 62 01 00 00
+
+{
+// ORIGINAL CODE - INJECTION POINT: AttributeCalculator:GetAtk+23
+
+AttributeCalculator:GetAtk: 55                             - push rbp
+AttributeCalculator:GetAtk+1: 48 8B EC                       - mov rbp,rsp
+AttributeCalculator:GetAtk+4: 48 83 EC 40                    - sub rsp,40
+AttributeCalculator:GetAtk+8: 48 89 75 F8                    - mov [rbp-08],rsi
+AttributeCalculator:GetAtk+c: 48 8B F1                       - mov rsi,rcx
+AttributeCalculator:GetAtk+f: 83 3E 00                       - cmp dword ptr [rsi],00
+AttributeCalculator:GetAtk+12: 48 8B 46 10                    - mov rax,[rsi+10]
+AttributeCalculator:GetAtk+16: 48 89 45 E8                    - mov [rbp-18],rax
+AttributeCalculator:GetAtk+1a: B8 01 00 00 00                 - mov eax,00000001
+AttributeCalculator:GetAtk+1f: 48 89 45 F0                    - mov [rbp-10],rax
+// ---------- INJECTING HERE ----------
+AttributeCalculator:GetAtk+23: 48 8B CE                       - mov rcx,rsi
+// ---------- DONE INJECTING  ----------
+AttributeCalculator:GetAtk+26: 49 BB F0 65 E1 25 62 01 00 00  - mov r11,AttributeCalculator:GetAtkNum
+AttributeCalculator:GetAtk+30: 41 FF D3                       - call r11
+AttributeCalculator:GetAtk+33: 48 8B D0                       - mov rdx,rax
+AttributeCalculator:GetAtk+36: 48 8B 45 F0                    - mov rax,[rbp-10]
+AttributeCalculator:GetAtk+3a: 48 8B 4D E8                    - mov rcx,[rbp-18]
+AttributeCalculator:GetAtk+3e: F3 0F 2A C2                    - cvtsi2ss xmm0,edx
+AttributeCalculator:GetAtk+42: F3 0F 5A C0                    - cvtss2sd xmm0,xmm0
+AttributeCalculator:GetAtk+46: F3 0F 10 49 18                 - movss xmm1,[rcx+18]
+AttributeCalculator:GetAtk+4b: F3 0F 5A C9                    - cvtss2sd xmm1,xmm1
+AttributeCalculator:GetAtk+4f: 48 B9 80 DD 9D F1 61 01 00 00  - mov rcx,00000161F19DDD80
+}
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>9</ID>
+          <Description>"血量附加值"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>3C</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>14</ID>
+          <Description>"内力附加值"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>40</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>13</ID>
+          <Description>"攻击附加值"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>44</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>35</ID>
+          <Description>"防御附加值"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>48</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>36</ID>
+          <Description>"出手附加值"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>4C</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>37</ID>
+          <Description>"命中附加值"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>50</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>38</ID>
+          <Description>"闪避附加值"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>54</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>39</ID>
+          <Description>"暴击附加值"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>58</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>40</ID>
+          <Description>"暴伤倍数"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>5C</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>41</ID>
+          <Description>"??"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>60</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>42</ID>
+          <Description>"??"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>64</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>43</ID>
+          <Description>"??"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>68</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>44</ID>
+          <Description>"??"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>6C</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>45</ID>
+          <Description>"??"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>70</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>46</ID>
+          <Description>"??"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>74</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>47</ID>
+          <Description>"??"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>78</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>48</ID>
+          <Description>"??"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>7C</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>49</ID>
+          <Description>"??"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>80</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>50</ID>
+          <Description>"??"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>84</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>51</ID>
+          <Description>"大境界"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>88</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>29</ID>
+          <Description>"小境界"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>8C</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>30</ID>
+          <Description>"武学阅历"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>AttrBase</Address>
+          <Offsets>
+            <Offset>90</Offset>
+            <Offset>10</Offset>
+          </Offsets>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>32</ID>
+      <Description>"修行经验增加"</Description>
+      <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+//code from here to '[DISABLE]' will be used to enable the cheat
+alloc(newmemExp,2048)
+label(returnhereExp)
+label(originalcodeExp)
+label(exitExp)
+registersymbol(ExpModifier)
+alloc(ExpModifier,4)
+
+ExpModifier:
+  db C8
+newmemExp:
+  add ecx,[ExpModifier]
+originalcodeExp:
+  mov [rax+00000090],ecx
+  jmp LevelManager:GainExperience+133
+  lea rsp,[rsp+00]
+
+exitExp:
+  jmp returnhereExp
+
+LevelManager:GainExperience+27:
+  jmp far newmemExp
+  nop 2
+returnhereExp:
+
+[DISABLE]
+//code from here till the end of the code will be used to disable the cheat
+dealloc(*)
+unregistersymbol(*)
+LevelManager:GainExperience+27:
+db 89 88 90 00 00 00 E9 01 01 00 00 48 8D 64 24 00
+{
+// ORIGINAL CODE - INJECTION POINT: LevelManager:GainExperience+27
+
+LevelManager:GainExperience+1: 48 8B EC              - mov rbp,rsp
+LevelManager:GainExperience+4: 48 83 EC 50           - sub rsp,50
+LevelManager:GainExperience+8: 48 89 7D F8           - mov [rbp-08],rdi
+LevelManager:GainExperience+c: 48 8B F9              - mov rdi,rcx
+LevelManager:GainExperience+f: 48 89 55 F0           - mov [rbp-10],rdx
+LevelManager:GainExperience+13: 83 3F 00              - cmp dword ptr [rdi],00
+LevelManager:GainExperience+16: 48 8B 47 10           - mov rax,[rdi+10]
+LevelManager:GainExperience+1a: 48 8B D0              - mov rdx,rax
+LevelManager:GainExperience+1d: 48 63 88 90 00 00 00  - movsxd  rcx,dword ptr [rax+00000090]
+LevelManager:GainExperience+24: 03 4D F0              - add ecx,[rbp-10]
+// ---------- INJECTING HERE ----------
+LevelManager:GainExperience+27: 89 88 90 00 00 00     - mov [rax+00000090],ecx
+// ---------- DONE INJECTING  ----------
+LevelManager:GainExperience+2d: E9 01 01 00 00        - jmp LevelManager:GainExperience+133
+LevelManager:GainExperience+32: 48 8D 64 24 00        - lea rsp,[rsp+00]
+LevelManager:GainExperience+37: 90                    - nop
+LevelManager:GainExperience+38: 83 3F 00              - cmp dword ptr [rdi],00
+LevelManager:GainExperience+3b: 48 8B 47 10           - mov rax,[rdi+10]
+LevelManager:GainExperience+3f: 48 8B C8              - mov rcx,rax
+LevelManager:GainExperience+42: 48 89 4D D0           - mov [rbp-30],rcx
+LevelManager:GainExperience+46: 48 89 45 E0           - mov [rbp-20],rax
+LevelManager:GainExperience+4a: 48 63 80 90 00 00 00  - movsxd  rax,dword ptr [rax+00000090]
+LevelManager:GainExperience+51: 48 89 45 D8           - mov [rbp-28],rax
+}
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>33</ID>
+          <Description>"增加量"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>ExpModifier</Address>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+</CheatTable>
