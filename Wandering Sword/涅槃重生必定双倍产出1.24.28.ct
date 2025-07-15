@@ -1,0 +1,58 @@
+[ENABLE]
+aobscanmodule(OutputGather,JH-Win64-Shipping.exe,B8 64 00 00 00 3B C8 0F 4E C1 83 F8 19 0F 8D E8) // should be unique
+registersymbol(OutputGather)
+
+aobscanmodule(OutputMedic,JH-Win64-Shipping.exe,E8 9D 69 15 00) // should be unique
+registersymbol(OutputMedic)
+
+aobscanmodule(OutputCook,JH-Win64-Shipping.exe,E8 BB 63 15 00) // should be unique
+registersymbol(OutputCook)
+
+aobscanmodule(OutputFishing,JH-Win64-Shipping.exe,C9 B8 64 00 00 00) // should be unique
+registersymbol(OutputFishing)
+
+aobscanmodule(OutputSmith,JH-Win64-Shipping.exe,B8 64 00 00 00 3B C8 0F 4E C1 83 F8 19 0F 8D CD) // should be unique
+registersymbol(OutputSmith)
+
+aobscanmodule(OutputIngot,JH-Win64-Shipping.exe,44 8D 75 FF 66 0F 6E C5) // should be unique
+registersymbol(OutputIngot)
+
+OutputGather:
+  mov eax,00000001
+
+OutputMedic+2B:
+  mov eax,00000001
+
+OutputCook+2B:
+  mov eax,00000001
+
+OutputFishing+1:
+  mov eax,00000001
+
+OutputSmith:
+  mov eax,00000001
+
+OutputIngot+8:
+  mov eax,00007FFF
+
+[DISABLE]
+OutputGather:
+  db B8 64 00 00 00
+
+OutputMedic+2B:
+  db B8 64 00 00 00
+
+OutputCook+2B:
+  db B8 64 00 00 00
+
+OutputFishing+1:
+  db B8 64 00 00 00
+
+OutputSmith:
+  db B8 64 00 00 00
+
+OutputIngot+8:
+  db 25 FF 7F 00 00
+
+unregistersymbol(*)
+dealloc(*)
